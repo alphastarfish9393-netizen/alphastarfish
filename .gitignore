@@ -1,0 +1,18 @@
+# VirtualBox OVA files (large binaries)
+*.ova
+*.ova.asc
+
+# Downloaded OVA directory
+whonix_ova/
+
+# VirtualBox VM files
+*.vdi
+*.vmdk
+*.vbox
+*.vbox-prev
+
+# Temporary files
+*.tmp
+*.log
+.DS_Store
+*~
