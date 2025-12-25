@@ -17,6 +17,7 @@ This repository includes guides and scripts for setting up VirtualBox with OVA f
 ### Contents
 
 - **VIRTUALBOX_SETUP.md** - Detailed step-by-step guide for downloading and importing OVA files
+- **QUICKREF.md** - Quick reference card for fast setup
 - **download_ova.sh** - Automated script to help download the OVA files
 
 ### What are Gateway and Workstation VMs?
