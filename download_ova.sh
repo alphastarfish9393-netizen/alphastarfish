@@ -53,11 +53,18 @@ echo ""
 if [ -n "$GATEWAY_URL" ]; then
     echo -e "${YELLOW}Downloading Gateway OVA...${NC}"
     if [ "$DOWNLOADER" = "wget" ]; then
-        wget -c "$GATEWAY_URL" || echo -e "${RED}Gateway download failed${NC}"
+        if wget -c "$GATEWAY_URL"; then
+            echo -e "${GREEN}Gateway download completed!${NC}"
+        else
+            echo -e "${RED}Gateway download failed${NC}"
+        fi
     else
-        curl -C - -O "$GATEWAY_URL" || echo -e "${RED}Gateway download failed${NC}"
+        if curl -C - -O "$GATEWAY_URL"; then
+            echo -e "${GREEN}Gateway download completed!${NC}"
+        else
+            echo -e "${RED}Gateway download failed${NC}"
+        fi
     fi
-    echo -e "${GREEN}Gateway download completed!${NC}"
     echo ""
 fi
 
@@ -65,11 +72,18 @@ fi
 if [ -n "$WORKSTATION_URL" ]; then
     echo -e "${YELLOW}Downloading Workstation OVA...${NC}"
     if [ "$DOWNLOADER" = "wget" ]; then
-        wget -c "$WORKSTATION_URL" || echo -e "${RED}Workstation download failed${NC}"
+        if wget -c "$WORKSTATION_URL"; then
+            echo -e "${GREEN}Workstation download completed!${NC}"
+        else
+            echo -e "${RED}Workstation download failed${NC}"
+        fi
     else
-        curl -C - -O "$WORKSTATION_URL" || echo -e "${RED}Workstation download failed${NC}"
+        if curl -C - -O "$WORKSTATION_URL"; then
+            echo -e "${GREEN}Workstation download completed!${NC}"
+        else
+            echo -e "${RED}Workstation download failed${NC}"
+        fi
     fi
-    echo -e "${GREEN}Workstation download completed!${NC}"
     echo ""
 fi
 
