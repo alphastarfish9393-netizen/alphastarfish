@@ -49,7 +49,9 @@ case "$ARCH" in
     aarch64|arm64)
         APPIMAGE_URL="https://cdn.browseros.com/releases/linux/BrowserOS-latest-arm64.AppImage"
         FALLBACK_URL="https://files.browseros.com/releases/linux/BrowserOS-latest-arm64.AppImage"
-        GITHUB_URL="https://github.com/browseros-ai/BrowserOS/releases/latest/download/BrowserOS_latest_arm64.AppImage"
+        # Note: ARM64 AppImage may not be available in all releases, use .deb as fallback
+        GITHUB_URL="https://github.com/browseros-ai/BrowserOS/releases/download/v0.35.0/BrowserOS_v0.35.0_amd64.deb"
+        print_warning "ARM64 AppImage may not be available. Will try CDN first, then .deb package."
         ;;
     *)
         print_error "Unsupported architecture: $ARCH"
