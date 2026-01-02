@@ -44,10 +44,12 @@ case "$ARCH" in
     x86_64)
         APPIMAGE_URL="https://cdn.browseros.com/releases/linux/BrowserOS-latest-x86_64.AppImage"
         FALLBACK_URL="https://files.browseros.com/releases/linux/BrowserOS-latest-x86_64.AppImage"
+        GITHUB_URL="https://github.com/browseros-ai/BrowserOS/releases/download/v0.35.0/BrowserOS_v0.35.0_x64.AppImage"
         ;;
     aarch64|arm64)
         APPIMAGE_URL="https://cdn.browseros.com/releases/linux/BrowserOS-latest-arm64.AppImage"
         FALLBACK_URL="https://files.browseros.com/releases/linux/BrowserOS-latest-arm64.AppImage"
+        GITHUB_URL="https://github.com/browseros-ai/BrowserOS/releases/latest/download/BrowserOS_latest_arm64.AppImage"
         ;;
     *)
         print_error "Unsupported architecture: $ARCH"
@@ -85,9 +87,14 @@ else
     if download_file "$FALLBACK_URL" "$DOWNLOAD_PATH"; then
         print_info "Download completed successfully from fallback CDN"
     else
-        print_error "Failed to download BrowserOS from both CDN sources"
-        print_info "Please visit https://github.com/browseros-ai/BrowserOS/releases to download manually"
-        exit 1
+        print_warning "Both CDN sources failed, trying GitHub releases..."
+        if download_file "$GITHUB_URL" "$DOWNLOAD_PATH"; then
+            print_info "Download completed successfully from GitHub"
+        else
+            print_error "Failed to download BrowserOS from all sources (CDN + GitHub)"
+            print_info "Please visit https://github.com/browseros-ai/BrowserOS/releases to download manually"
+            exit 1
+        fi
     fi
 fi
 
