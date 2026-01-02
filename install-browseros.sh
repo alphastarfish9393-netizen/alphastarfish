@@ -66,26 +66,28 @@ DOWNLOAD_PATH="$DOWNLOAD_DIR/$FILENAME"
 print_info "Starting BrowserOS download..."
 print_info "Download URL: $APPIMAGE_URL"
 
-# Try to download from primary CDN
-if curl -f -L -o "$DOWNLOAD_PATH" "$APPIMAGE_URL" 2>&1 | grep -q "Failed\|error" && [ ! -f "$DOWNLOAD_PATH" ]; then
-    print_warning "Primary CDN failed, trying fallback URL..."
-    if curl -f -L -o "$DOWNLOAD_PATH" "$FALLBACK_URL" 2>&1 | grep -q "Failed\|error" && [ ! -f "$DOWNLOAD_PATH" ]; then
-        print_error "Failed to download BrowserOS from both CDN sources"
-        print_info "Please visit https://github.com/browseros-ai/BrowserOS/releases to download manually"
-        exit 1
+# Function to download file
+download_file() {
+    local url="$1"
+    local output="$2"
+    if curl -f -L -o "$output" "$url"; then
+        return 0
     else
-        print_info "Download completed successfully from fallback CDN"
+        return 1
     fi
-elif [ -f "$DOWNLOAD_PATH" ]; then
+}
+
+# Try to download from primary CDN
+if download_file "$APPIMAGE_URL" "$DOWNLOAD_PATH"; then
     print_info "Download completed successfully from primary CDN"
 else
     print_warning "Primary CDN failed, trying fallback URL..."
-    if curl -f -L -o "$DOWNLOAD_PATH" "$FALLBACK_URL" 2>&1 | grep -q "Failed\|error" && [ ! -f "$DOWNLOAD_PATH" ]; then
+    if download_file "$FALLBACK_URL" "$DOWNLOAD_PATH"; then
+        print_info "Download completed successfully from fallback CDN"
+    else
         print_error "Failed to download BrowserOS from both CDN sources"
         print_info "Please visit https://github.com/browseros-ai/BrowserOS/releases to download manually"
         exit 1
-    else
-        print_info "Download completed successfully from fallback CDN"
     fi
 fi
 
@@ -98,11 +100,13 @@ fi
 # Check file size (should be at least 100MB for a browser)
 FILE_SIZE=$(wc -c < "$DOWNLOAD_PATH")
 if [ "$FILE_SIZE" -lt "$MIN_FILE_SIZE" ]; then
-    print_warning "Downloaded file seems too small ($FILE_SIZE bytes). This might be an error page."
-    print_info "Please verify the download manually at: $DOWNLOAD_PATH"
-else
-    print_info "Downloaded file size: $(numfmt --to=iec-i --suffix=B $FILE_SIZE 2>/dev/null || echo "$FILE_SIZE bytes")"
+    print_error "Downloaded file seems too small ($FILE_SIZE bytes). This might be an error page."
+    print_info "Expected minimum size: $(numfmt --to=iec-i --suffix=B $MIN_FILE_SIZE 2>/dev/null || echo "$MIN_FILE_SIZE bytes")"
+    print_info "Please check your internet connection and try again, or download manually from:"
+    print_info "https://github.com/browseros-ai/BrowserOS/releases"
+    exit 1
 fi
+print_info "Downloaded file size: $(numfmt --to=iec-i --suffix=B $FILE_SIZE 2>/dev/null || echo "$FILE_SIZE bytes")"
 
 # Make AppImage executable
 chmod +x "$DOWNLOAD_PATH"
