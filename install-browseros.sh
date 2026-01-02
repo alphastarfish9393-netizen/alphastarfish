@@ -11,6 +11,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Constants
+MIN_FILE_SIZE=104857600  # 100MB minimum expected size for BrowserOS
+
 # Print functions
 print_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
@@ -64,16 +67,25 @@ print_info "Starting BrowserOS download..."
 print_info "Download URL: $APPIMAGE_URL"
 
 # Try to download from primary CDN
-if curl -L -o "$DOWNLOAD_PATH" "$APPIMAGE_URL" 2>/dev/null; then
-    print_info "Download completed successfully from primary CDN"
-else
+if curl -f -L -o "$DOWNLOAD_PATH" "$APPIMAGE_URL" 2>&1 | grep -q "Failed\|error" && [ ! -f "$DOWNLOAD_PATH" ]; then
     print_warning "Primary CDN failed, trying fallback URL..."
-    if curl -L -o "$DOWNLOAD_PATH" "$FALLBACK_URL" 2>/dev/null; then
-        print_info "Download completed successfully from fallback CDN"
-    else
+    if curl -f -L -o "$DOWNLOAD_PATH" "$FALLBACK_URL" 2>&1 | grep -q "Failed\|error" && [ ! -f "$DOWNLOAD_PATH" ]; then
         print_error "Failed to download BrowserOS from both CDN sources"
         print_info "Please visit https://github.com/browseros-ai/BrowserOS/releases to download manually"
         exit 1
+    else
+        print_info "Download completed successfully from fallback CDN"
+    fi
+elif [ -f "$DOWNLOAD_PATH" ]; then
+    print_info "Download completed successfully from primary CDN"
+else
+    print_warning "Primary CDN failed, trying fallback URL..."
+    if curl -f -L -o "$DOWNLOAD_PATH" "$FALLBACK_URL" 2>&1 | grep -q "Failed\|error" && [ ! -f "$DOWNLOAD_PATH" ]; then
+        print_error "Failed to download BrowserOS from both CDN sources"
+        print_info "Please visit https://github.com/browseros-ai/BrowserOS/releases to download manually"
+        exit 1
+    else
+        print_info "Download completed successfully from fallback CDN"
     fi
 fi
 
@@ -84,12 +96,12 @@ if [ ! -f "$DOWNLOAD_PATH" ]; then
 fi
 
 # Check file size (should be at least 100MB for a browser)
-FILE_SIZE=$(stat -c%s "$DOWNLOAD_PATH" 2>/dev/null || stat -f%z "$DOWNLOAD_PATH" 2>/dev/null)
-if [ "$FILE_SIZE" -lt 104857600 ]; then
+FILE_SIZE=$(wc -c < "$DOWNLOAD_PATH")
+if [ "$FILE_SIZE" -lt "$MIN_FILE_SIZE" ]; then
     print_warning "Downloaded file seems too small ($FILE_SIZE bytes). This might be an error page."
     print_info "Please verify the download manually at: $DOWNLOAD_PATH"
 else
-    print_info "Downloaded file size: $(numfmt --to=iec-i --suffix=B $FILE_SIZE)"
+    print_info "Downloaded file size: $(numfmt --to=iec-i --suffix=B $FILE_SIZE 2>/dev/null || echo "$FILE_SIZE bytes")"
 fi
 
 # Make AppImage executable
