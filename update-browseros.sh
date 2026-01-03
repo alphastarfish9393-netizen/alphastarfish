@@ -40,14 +40,10 @@ echo ""
 # Detect OS
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     PLATFORM="linux"
-    FILENAME="BrowserOS-${VERSION}-linux-${ARCH_SUFFIX}.AppImage"
+    FILENAME="BrowserOS_${VERSION}_${ARCH_SUFFIX}.AppImage"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     PLATFORM="macos"
-    if [[ "$ARCH_SUFFIX" == "arm64" ]]; then
-        FILENAME="BrowserOS-${VERSION}-mac-arm64.dmg"
-    else
-        FILENAME="BrowserOS-${VERSION}-mac-x64.dmg"
-    fi
+    FILENAME="BrowserOS_${VERSION}_${ARCH_SUFFIX}.dmg"
 else
     echo "Error: Unsupported operating system: $OSTYPE"
     echo "BrowserOS supports Linux and macOS."

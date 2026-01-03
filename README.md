@@ -38,10 +38,13 @@ If you prefer to update manually:
 
 1. Visit the [BrowserOS releases page](https://github.com/browseros-ai/BrowserOS/releases)
 2. Download the appropriate version for your platform:
-   - Linux: `BrowserOS-v0.35.0-linux-x64.AppImage` or `BrowserOS-v0.35.0-linux-arm64.AppImage`
-   - macOS: `BrowserOS-v0.35.0-mac-x64.dmg` or `BrowserOS-v0.35.0-mac-arm64.dmg`
-3. For Linux: Make the AppImage executable and run it
+   - Linux: `BrowserOS_v0.35.0_x64.AppImage`
+   - macOS (Intel): `BrowserOS_v0.35.0_x64.dmg`
+   - macOS (Apple Silicon): `BrowserOS_v0.35.0_arm64.dmg`
+   - Windows: `BrowserOS_v0.35.0_x64_installer.exe`
+3. For Linux: Make the AppImage executable (`chmod +x BrowserOS_v0.35.0_x64.AppImage`) and run it
 4. For macOS: Open the DMG and drag to Applications
+5. For Windows: Run the installer
 
 ### More Information
 
