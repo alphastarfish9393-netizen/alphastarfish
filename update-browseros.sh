@@ -10,6 +10,7 @@ REPO="browseros-ai/BrowserOS"
 VERSION="v0.35.0"
 INSTALL_DIR="$HOME/.local/bin"
 DESKTOP_DIR="$HOME/.local/share/applications"
+MIN_FILE_SIZE=100000000  # 100MB minimum expected file size
 
 echo "==================================="
 echo "BrowserOS Update Script"
@@ -57,10 +58,6 @@ echo "Platform: $PLATFORM"
 echo "Download file: $FILENAME"
 echo ""
 
-# Create directories if they don't exist
-mkdir -p "$INSTALL_DIR"
-mkdir -p "$DESKTOP_DIR"
-
 # Download URL
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${VERSION}/${FILENAME}"
 
@@ -86,19 +83,30 @@ if [[ ! -f "/tmp/$FILENAME" ]]; then
 fi
 
 FILE_SIZE=$(stat -c%s "/tmp/$FILENAME" 2>/dev/null || stat -f%z "/tmp/$FILENAME" 2>/dev/null)
-if [[ $FILE_SIZE -lt 100000000 ]]; then
+if [[ $FILE_SIZE -lt $MIN_FILE_SIZE ]]; then
     echo "Error: Downloaded file seems too small (${FILE_SIZE} bytes)."
-    echo "Expected at least 100MB. Download may have failed."
+    echo "Expected at least $(($MIN_FILE_SIZE / 1000000))MB. Download may have failed."
     rm -f "/tmp/$FILENAME"
     exit 1
 fi
 
-echo "✓ Download successful ($(numfmt --to=iec $FILE_SIZE 2>/dev/null || echo "${FILE_SIZE} bytes"))"
+# Format file size for display
+if command -v numfmt &> /dev/null; then
+    FILE_SIZE_DISPLAY=$(numfmt --to=iec $FILE_SIZE)
+else
+    FILE_SIZE_DISPLAY="${FILE_SIZE} bytes"
+fi
+
+echo "✓ Download successful (${FILE_SIZE_DISPLAY})"
 echo ""
 
 # Install based on platform
 if [[ "$PLATFORM" == "linux" ]]; then
     echo "Installing BrowserOS AppImage..."
+    
+    # Create directories if they don't exist
+    mkdir -p "$INSTALL_DIR"
+    mkdir -p "$DESKTOP_DIR"
     
     # Remove old version if exists
     if [[ -f "$INSTALL_DIR/BrowserOS.AppImage" ]]; then
