@@ -44,9 +44,12 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     PLATFORM="macos"
     FILENAME="BrowserOS_${VERSION}_${ARCH_SUFFIX}.dmg"
+elif [[ "$OSTYPE" == "msys"* ]] || [[ "$OSTYPE" == "cygwin"* ]] || [[ "$OSTYPE" == "win32" ]]; then
+    PLATFORM="windows"
+    FILENAME="BrowserOS_${VERSION}_${ARCH_SUFFIX}_installer.exe"
 else
     echo "Error: Unsupported operating system: $OSTYPE"
-    echo "BrowserOS supports Linux and macOS."
+    echo "BrowserOS supports Linux, macOS, and Windows."
     exit 1
 fi
 
@@ -173,6 +176,26 @@ elif [[ "$PLATFORM" == "macos" ]]; then
     echo "  3. Launch BrowserOS from Applications"
     echo ""
     echo "The DMG file is located at: $DMG_PATH"
+    echo "You can delete it after installation."
+
+elif [[ "$PLATFORM" == "windows" ]]; then
+    echo "Installing BrowserOS on Windows..."
+    
+    INSTALLER_PATH="/tmp/$FILENAME"
+    
+    echo "Running installer..."
+    echo ""
+    
+    # Run the installer
+    "$INSTALLER_PATH"
+    
+    echo "==================================="
+    echo "✓ BrowserOS installer launched!"
+    echo "==================================="
+    echo ""
+    echo "Follow the installer prompts to complete installation."
+    echo ""
+    echo "The installer file is located at: $INSTALLER_PATH"
     echo "You can delete it after installation."
 fi
 

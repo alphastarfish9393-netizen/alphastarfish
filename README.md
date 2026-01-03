@@ -29,8 +29,9 @@ The update script will install **BrowserOS v0.35.0**, which includes:
 
 ### Supported Platforms
 
-- **Linux**: x86_64 and ARM64 (installs as AppImage)
+- **Linux**: x86_64 (installs as AppImage)
 - **macOS**: x64 and ARM64 (installs as DMG)
+- **Windows**: x64 (installs as EXE)
 
 ### Manual Update
 
